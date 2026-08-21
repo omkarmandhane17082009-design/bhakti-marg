@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#8b1e3f" />
+  <title>Bhakti Marg — Version 1</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span>🚩</span><span>Bhakti Marg</span></div>
+    <nav>
+      <button data-page="home" class="nav-btn active">Home</button>
+      <button data-page="jaap" class="nav-btn">Jaap</button>
+      <button data-page="progress" class="nav-btn">Progress</button>
+      <button data-page="profile" class="nav-btn">Profile</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="page active">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">BHAKTI • SADHANA • SEVA</p>
+          <h1>Begin your journey from remembrance to devotion.</h1>
+          <p class="hero-copy">Build a simple daily practice of Naam Smaran, learning, good actions and seva.</p>
+          <button class="primary" data-page="jaap">Start Today's Jaap →</button>
+        </div>
+        <div class="mandir-card">
+          <div class="diya">🪔</div>
+          <h3>आज का संकल्प</h3>
+          <p>Take a few moments today to remember Bhagwan with श्रद्धा and a calm mind.</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><b id="homeJaap">0</b><span>Your total jaap</span></div>
+        <div class="stat"><b id="homeStreak">0</b><span>Day streak</span></div>
+        <div class="stat"><b id="homeSeva">0</b><span>Seva activities</span></div>
+      </div>
+
+      <div class="section-head"><h2>Today's Bhakti</h2><span>Small steps matter.</span></div>
+      <div class="cards three">
+        <article class="card"><span class="icon">📿</span><h3>Naam Smaran</h3><p>Complete your chosen daily mantra target.</p><button data-page="jaap" class="text-btn">Open Jaap</button></article>
+        <article class="card"><span class="icon">📖</span><h3>Today's Thought</h3><p>Let devotion show through humility, kindness and self-discipline.</p></article>
+        <article class="card"><span class="icon">❤️</span><h3>Today's Seva</h3><p>Do one good action without expecting recognition.</p><button id="sevaBtn" class="text-btn">Mark Seva Done</button></article>
+      </div>
+    </section>
+
+    <section id="jaap" class="page">
+      <div class="section-head"><h2>📿 Daily Jaap</h2><span>Naam Smaran</span></div>
+      <div class="jaap-layout">
+        <div class="card counter-card">
+          <label for="mantra">Mantra</label>
+          <select id="mantra">
+            <option>ॐ हनुमते नमः</option>
+            <option>ॐ नमः शिवाय</option>
+            <option>श्री राम जय राम जय जय राम</option>
+            <option>हरे कृष्ण महामंत्र</option>
+            <option>गायत्री मंत्र</option>
+          </select>
+          <label for="target">Daily target</label>
+          <select id="target">
+            <option value="108">108</option>
+            <option value="216">216</option>
+            <option value="500">500</option>
+            <option value="1008">1,008</option>
+          </select>
+
+          <div class="counter-circle">
+            <span id="count">0</span>
+            <small>/ <span id="targetText">108</span></small>
+          </div>
+          <p id="completeMsg" class="complete"></p>
+
+          <div class="counter-actions">
+            <button id="minus" class="secondary">−1</button>
+            <button id="plus" class="primary">+1 Jaap</button>
+            <button id="mala" class="secondary">+108</button>
+          </div>
+          <button id="reset" class="reset">Reset today's count</button>
+        </div>
+
+        <div class="card">
+          <h3>🙏 Practice with awareness</h3>
+          <p>Use the counter to keep track of your practice. The number is a tool for consistency, not a measure of anyone's spiritual worth.</p>
+          <div class="tip"><b>Tip</b><br>Chant at a comfortable pace and keep your attention on the mantra.</div>
+          <h3 class="mt">Today's target</h3>
+          <div class="progress"><span id="bar"></span></div>
+          <p id="percent">0% complete</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="progress" class="page">
+      <div class="section-head"><h2>🔥 Your Progress</h2><span>Consistency, not competition.</span></div>
+      <div class="cards three">
+        <div class="card big-stat"><span>📿</span><b id="totalJaap">0</b><small>Total Jaap</small></div>
+        <div class="card big-stat"><span>🔥</span><b id="streak">0</b><small>Day Streak</small></div>
+        <div class="card big-stat"><span>❤️</span><b id="seva">0</b><small>Seva Activities</small></div>
+      </div>
+      <div class="card">
+        <h3>🏅 Achievements</h3>
+        <div id="badges" class="badges"></div>
+      </div>
+      <div class="card">
+        <h3>📖 Bhakti Library — Starter</h3>
+        <div class="library">
+          <article><b>Hanuman Bhakti</b><p>Learn about courage, humility, service and devotion through Hanuman's traditional stories.</p></article>
+          <article><b>Naam Smaran</b><p>Regular remembrance can become a simple anchor in everyday life.</p></article>
+          <article><b>Seva</b><p>Let devotion express itself through kindness and helpful action.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="profile" class="page">
+      <div class="section-head"><h2>👤 Profile</h2><span>Your Bhakti Journey</span></div>
+      <div class="card profile-card">
+        <div class="avatar">🙏</div>
+        <div>
+          <h2 id="profileName">Guest Devotee</h2>
+          <p>Your progress is stored locally in this Version 1 demo.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Daily intention</h3>
+        <p>“May my practice make me more compassionate, disciplined and helpful.”</p>
+      </div>
+      <button id="clearData" class="danger">Clear local progress</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>🚩 Bhakti Marg V1 • A community concept for Naam Smaran, Sadhana and Seva.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
