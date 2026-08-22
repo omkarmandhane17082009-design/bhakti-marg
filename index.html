@@ -13,6 +13,7 @@
     <button data-page="jaap" class="nav-btn">Jaap</button>
     <button data-page="progress" class="nav-btn">Progress</button>
     <button data-page="sevaPage" class="nav-btn">Seva</button>
+    <button data-page="community" class="nav-btn">Community</button>
     <button data-page="profile" class="nav-btn">Profile</button>
   </nav>
 </header>
@@ -85,6 +86,31 @@
 <div class="card"><h3>🌸 Your Seva</h3><div class="seva-total"><b id="sevaTotal">0</b><span>recorded activities</span></div><p>Seva can turn devotion into helpful action. It does not need to be public or costly.</p><div class="tip">🙏 <b>Remember:</b> serve without expecting recognition.</div></div>
 </div>
 <div class="card seva-history-card"><h3>📜 Your Seva History</h3><div id="sevaHistory"><p>No seva recorded yet.</p></div></div>
+</section>
+
+
+<section id="community" class="page">
+<div class="section-head"><h2>🌍 Community Bhakti</h2><span>Together in Naam Smaran</span></div>
+<div class="card community-hero">
+  <div class="community-icon">📿</div>
+  <h2>Our Collective Jaap</h2>
+  <div class="community-number" id="communityJaap">0</div>
+  <p>Jaap completed by participating Bhakti Marg devotees.</p>
+  <div class="tip">🙏 Your personal progress stays private. Only the collective total is shown here.</div>
+</div>
+<div class="cards three">
+  <div class="card big-stat">🌍<b id="communityJaapShort">0</b><small>Community Jaap</small></div>
+  <div class="card big-stat">🎯<b id="communityGoal">100000</b><small>First community goal</small></div>
+  <div class="card big-stat">📈<b id="communityPercent">0%</b><small>Goal progress</small></div>
+</div>
+<div class="card">
+  <h3>🌸 Community Goal</h3>
+  <p>Let every sincere practice contribute to a shared devotional milestone.</p>
+  <div class="progress-track"><div id="communityProgress" class="progress-fill"></div></div>
+  <p id="communityGoalText" class="message">0 / 100,000 jaap</p>
+</div>
+<button id="refreshCommunity" class="secondary">↻ Refresh community total</button>
+<p id="communityMessage" class="message"></p>
 </section>
 
 <section id="profile" class="page">

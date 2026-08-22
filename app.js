@@ -11,9 +11,9 @@ $("mantra").onchange=e=>mantra=e.target.value;$("target").onchange=e=>{target=+e
 function setMode(m){mode=m;$("loginTab").classList.toggle("active",m==="login");$("signupTab").classList.toggle("active",m==="signup");$("nameWrap").classList.toggle("hidden",m!=="signup");$("authSubmit").textContent=m==="login"?"Login":"Create account";$("authMessage").textContent=""}
 $("loginTab").onclick=()=>setMode("login");$("signupTab").onclick=()=>setMode("signup");
 async function profile(user,name){const r=await sb.from("profiles").upsert({id:user.id,display_name:name||"Devotee"},{onConflict:"id"});if(r.error)console.error(r.error)}
-async function load(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const r=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();if(r.data){total=Number(r.data.total_jaap)||0;streak=r.data.streak||0;seva=r.data.seva_count||0;$("profileName").textContent=r.data.display_name||"Devotee";$("welcome").textContent=`Welcome, ${r.data.display_name||"Devotee"} 🙏`}$("profileEmail").textContent=user.email||"";await loadSevaHistory(user.id);render()}
+async function load(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const r=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();if(r.data){total=Number(r.data.total_jaap)||0;streak=r.data.streak||0;seva=r.data.seva_count||0;$("profileName").textContent=r.data.display_name||"Devotee";$("welcome").textContent=`Welcome, ${r.data.display_name||"Devotee"} 🙏`}$("profileEmail").textContent=user.email||"";try{await loadSevaHistory(user.id)}catch(e){console.error(e)};try{await loadCommunityJaap()}catch(e){console.error(e)};render()}
 $("authForm").onsubmit=async e=>{e.preventDefault();$("authMessage").textContent="Working…";const email=$("email").value.trim(),password=$("password").value;if(mode==="signup"){const r=await sb.auth.signUp({email,password});if(r.error){$("authMessage").textContent=r.error.message;return}if(r.data.user)await profile(r.data.user,$("displayName").value.trim());$("authMessage").textContent="Account created. Check your email if confirmation is enabled, then log in."}else{const r=await sb.auth.signInWithPassword({email,password});if(r.error){$("authMessage").textContent=r.error.message;return}await show()}};
-async function show(){$("auth").classList.add("hidden");$("app").classList.remove("hidden");await load()}
+async function show(){$("auth").classList.add("hidden");$("app").classList.remove("hidden");try{await load()}catch(e){console.error(e);render()}}
 $("saveJaap").onclick=async()=>{const {data:{user}}=await sb.auth.getUser();if(!user)return;$("saveMessage").textContent="Saving…";const r=await sb.from("jaap_records").upsert({user_id:user.id,mantra,jaap_count:count,target,completed:count>=target,recorded_date:today()},{onConflict:"user_id,recorded_date"});if(r.error){$("saveMessage").textContent=r.error.message;return}const old=total;total=Math.max(total,old+count);const p=await sb.from("profiles").update({total_jaap:total,streak}).eq("id",user.id);$("saveMessage").textContent=p.error?p.error.message:"☁️ Today's jaap saved.";render()};
 async function loadSevaHistory(userId){
  const r=await sb.from("seva_records").select("id,seva_type,description,recorded_date").eq("user_id",userId).order("recorded_date",{ascending:false}).limit(50);
@@ -29,5 +29,22 @@ $("sevaForm").onsubmit=async e=>{
  if(r.error){$("sevaMessage").textContent=r.error.message;return}
  $("sevaForm").reset();$("sevaMessage").textContent="❤️ Seva saved successfully.";await loadSevaHistory(user.id);
 };
+
+const COMMUNITY_GOAL=100000;
+async function loadCommunityJaap(){
+  const r=await sb.from("community_stats").select("total_jaap").eq("id",1).maybeSingle();
+  if(r.error){console.error(r.error);$("communityMessage").textContent="Unable to load community total.";return}
+  const n=Number(r.data?.total_jaap)||0;
+  const pct=Math.min(100,(n/COMMUNITY_GOAL)*100);
+  $("communityJaap").textContent=n.toLocaleString();
+  $("communityJaapShort").textContent=n.toLocaleString();
+  $("communityGoal").textContent=COMMUNITY_GOAL.toLocaleString();
+  $("communityPercent").textContent=pct.toFixed(1)+"%";
+  $("communityProgress").style.width=pct+"%";
+  $("communityGoalText").textContent=`${n.toLocaleString()} / ${COMMUNITY_GOAL.toLocaleString()} jaap`;
+  $("communityMessage").textContent="";
+}
+$("refreshCommunity").onclick=loadCommunityJaap;
+
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
 (async()=>{const r=await sb.auth.getSession();setMode("login");if(r.data.session)show();else $("auth").classList.remove("hidden");render()})();
