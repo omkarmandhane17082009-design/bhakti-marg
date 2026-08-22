@@ -1,56 +1,19 @@
-const KEY="bhaktiMargV1";
-const defaultState={count:0,totalJaap:0,streak:0,seva:0,lastDate:null,mantra:"ॐ हनुमते नमः",target:108};
-let state=JSON.parse(localStorage.getItem(KEY)||"null")||defaultState;
-
-const $=id=>document.getElementById(id);
-function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
-function today(){return new Date().toISOString().slice(0,10)}
-function render(){
-  $("count").textContent=state.count.toLocaleString();
-  $("targetText").textContent=Number(state.target).toLocaleString();
-  $("mantra").value=state.mantra;
-  $("target").value=state.target;
-  const pct=Math.min(100,Math.round(state.count/state.target*100));
-  $("bar").style.width=pct+"%"; $("percent").textContent=pct+"% complete";
-  $("completeMsg").textContent=state.count>=state.target?"🙏 आज की साधना पूर्ण! जय श्री राम 🚩":"";
-  ["homeJaap","totalJaap"].forEach(id=>$(id).textContent=state.totalJaap.toLocaleString());
-  ["homeStreak","streak"].forEach(id=>$(id).textContent=state.streak);
-  ["homeSeva","seva"].forEach(id=>$(id).textContent=state.seva);
-  const badges=[];
-  if(state.totalJaap>=108) badges.push("📿 First 108 Jaap");
-  if(state.totalJaap>=1008) badges.push("🚩 1,008 Jaap");
-  if(state.streak>=7) badges.push("🔥 7-Day Consistency");
-  if(state.streak>=21) badges.push("🪔 21-Day Consistency");
-  if(state.seva>=1) badges.push("❤️ First Seva");
-  $("badges").innerHTML=badges.length?badges.map(x=>`<span class="badge">${x}</span>`).join(""):"<p>Your first achievement is waiting. Begin today. 🙏</p>";
-}
-function addJaap(n){
-  const wasComplete=state.count>=state.target;
-  state.count=Math.max(0,state.count+n);
-  if(n>0){
-    state.totalJaap+=n;
-    if(state.count>=state.target && !wasComplete){
-      const d=today();
-      if(state.lastDate!==d){state.streak+=1;state.lastDate=d}
-    }
-  }
-  save();
-}
-function navigate(page){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-  $(page).classList.add("active");
-  const btn=document.querySelector(`[data-page="${page}"]`);
-  if(btn)btn.classList.add("active");
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
-$("plus").onclick=()=>addJaap(1);
-$("minus").onclick=()=>addJaap(-1);
-$("mala").onclick=()=>addJaap(108);
-$("reset").onclick=()=>{state.count=0;save()};
-$("mantra").onchange=e=>{state.mantra=e.target.value;save()};
-$("target").onchange=e=>{state.target=Number(e.target.value);state.count=0;save()};
-$("sevaBtn").onclick=()=>{state.seva+=1;save();alert("❤️ Seva recorded. May your good action inspire another good action.")};
-$("clearData").onclick=()=>{if(confirm("Clear all local Bhakti Marg progress?")){localStorage.removeItem(KEY);location.reload()}};
-render();
+const SUPABASE_URL="https://oxlrqzbdwquimvxjvjll.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_1IliYfoPR1eoOF5xw6b30g_Wyh-mnO5";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let mode="login",count=0,total=0,streak=0,seva=0,target=108,mantra="ॐ हनुमते नमः";
+const $=id=>document.getElementById(id), today=()=>new Date().toISOString().slice(0,10);
+function render(){$("count").textContent=count.toLocaleString();$("targetText").textContent=Number(target).toLocaleString();$("completeMsg").textContent=count>=target?"🙏 आज की साधना पूर्ण! 🚩":"";$("homeJaap").textContent=total.toLocaleString();$("totalJaap").textContent=total.toLocaleString();$("homeStreak").textContent=streak;$("streak").textContent=streak;$("homeSeva").textContent=seva;$("seva").textContent=seva;const b=[];if(total>=108)b.push("📿 First 108 Jaap");if(total>=1008)b.push("🚩 1,008 Jaap");if(streak>=7)b.push("🔥 7-Day Consistency");if(seva)b.push("❤️ First Seva");$("badges").innerHTML=b.length?b.map(x=>`<span class="badge">${x}</span>`).join(" "):"Start your journey today. 🙏"}
+function page(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));$(p).classList.add("active");const b=document.querySelector(`[data-page="${p}"]`);if(b)b.classList.add("active")}
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>page(b.dataset.page));
+$("plus").onclick=()=>{count++;render()};$("minus").onclick=()=>{count=Math.max(0,count-1);render()};$("mala").onclick=()=>{count+=108;render()};$("reset").onclick=()=>{count=0;render()};
+$("mantra").onchange=e=>mantra=e.target.value;$("target").onchange=e=>{target=+e.target.value;count=0;render()};
+function setMode(m){mode=m;$("loginTab").classList.toggle("active",m==="login");$("signupTab").classList.toggle("active",m==="signup");$("nameWrap").classList.toggle("hidden",m!=="signup");$("authSubmit").textContent=m==="login"?"Login":"Create account";$("authMessage").textContent=""}
+$("loginTab").onclick=()=>setMode("login");$("signupTab").onclick=()=>setMode("signup");
+async function profile(user,name){const r=await sb.from("profiles").upsert({id:user.id,display_name:name||"Devotee"},{onConflict:"id"});if(r.error)console.error(r.error)}
+async function load(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const r=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();if(r.data){total=Number(r.data.total_jaap)||0;streak=r.data.streak||0;seva=r.data.seva_count||0;$("profileName").textContent=r.data.display_name||"Devotee";$("welcome").textContent=`Welcome, ${r.data.display_name||"Devotee"} 🙏`}$("profileEmail").textContent=user.email||"";render()}
+$("authForm").onsubmit=async e=>{e.preventDefault();$("authMessage").textContent="Working…";const email=$("email").value.trim(),password=$("password").value;if(mode==="signup"){const r=await sb.auth.signUp({email,password});if(r.error){$("authMessage").textContent=r.error.message;return}if(r.data.user)await profile(r.data.user,$("displayName").value.trim());$("authMessage").textContent="Account created. Check your email if confirmation is enabled, then log in."}else{const r=await sb.auth.signInWithPassword({email,password});if(r.error){$("authMessage").textContent=r.error.message;return}await show()}};
+async function show(){$("auth").classList.add("hidden");$("app").classList.remove("hidden");await load()}
+$("saveJaap").onclick=async()=>{const {data:{user}}=await sb.auth.getUser();if(!user)return;$("saveMessage").textContent="Saving…";const r=await sb.from("jaap_records").upsert({user_id:user.id,mantra,jaap_count:count,target,completed:count>=target,recorded_date:today()},{onConflict:"user_id,recorded_date"});if(r.error){$("saveMessage").textContent=r.error.message;return}const old=total;total=Math.max(total,old+count);const p=await sb.from("profiles").update({total_jaap:total,streak}).eq("id",user.id);$("saveMessage").textContent=p.error?p.error.message:"☁️ Today's jaap saved.";render()};
+$("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
+(async()=>{const r=await sb.auth.getSession();setMode("login");if(r.data.session)show();else $("auth").classList.remove("hidden");render()})();
