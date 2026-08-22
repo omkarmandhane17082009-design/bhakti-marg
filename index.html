@@ -2,25 +2,100 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#8b1e3f"><meta name="description" content="Bhakti Marg — Naam Smaran, Sadhana and Seva">
-<title>Bhakti Marg</title><link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#8b1e3f"><title>Bhakti Marg V2</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="topbar"><div class="brand">🚩 Bhakti Marg</div><nav>
-<button data-page="home" class="nav-btn active">Home</button><button data-page="jaap" class="nav-btn">Jaap</button><button data-page="progress" class="nav-btn">Progress</button><button data-page="seva" class="nav-btn">Seva</button><button data-page="profile" class="nav-btn">Profile</button>
-</nav></header>
+<header class="topbar">
+  <div class="brand">🚩 Bhakti Marg</div>
+  <nav>
+    <button data-page="home" class="nav-btn active">Home</button>
+    <button data-page="jaap" class="nav-btn">Jaap</button>
+    <button data-page="progress" class="nav-btn">Progress</button>
+    <button data-page="sevaPage" class="nav-btn">Seva</button>
+    <button data-page="profile" class="nav-btn">Profile</button>
+  </nav>
+</header>
+
 <main>
-<section id="auth" class="auth-page"><div class="auth-card"><div class="auth-logo">🚩</div><h1>Bhakti Marg</h1><p>Naam Smaran • Sadhana • Seva</p>
-<div class="auth-tabs"><button id="loginTab" class="active">Login</button><button id="signupTab">Create account</button></div>
-<form id="authForm"><label>Email</label><input id="email" type="email" autocomplete="email" required><label>Password</label><input id="password" type="password" autocomplete="current-password" required minlength="6"><div id="nameWrap" class="hidden"><label>Display name</label><input id="displayName" type="text" maxlength="60"></div><button id="authSubmit" class="primary wide">Login</button></form><p id="authMessage" class="message"></p></div></section>
+<section id="auth" class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">🚩</div>
+    <h1>Bhakti Marg</h1>
+    <p>Naam Smaran • Sadhana • Seva</p>
+    <div class="auth-tabs"><button id="loginTab" class="active">Login</button><button id="signupTab">Create account</button></div>
+    <form id="authForm">
+      <label>Email</label><input id="email" type="email" required>
+      <label>Password</label><input id="password" type="password" required minlength="6">
+      <div id="nameWrap" class="hidden"><label>Display name</label><input id="displayName" type="text" maxlength="60"></div>
+      <button id="authSubmit" class="primary wide">Login</button>
+    </form>
+    <p id="authMessage" class="message"></p>
+  </div>
+</section>
+
 <section id="app" class="hidden">
-<section id="home" class="page active"><div class="hero"><div><p class="eyebrow">BHAKTI • SADHANA • SEVA</p><h1 id="welcome">Begin your journey.</h1><p class="hero-copy">Build a simple daily practice of Naam Smaran, learning, good actions and seva.</p><button class="primary" data-page="jaap">Start Today's Jaap →</button></div><div class="mandir-card"><div class="diya">🪔</div><h3>आज का भाव</h3><p id="dailyThought">Naam Smaran is a practice of remembrance, not a race.</p></div></div>
-<div class="stats-grid"><div class="stat"><b id="homeJaap">0</b><span>Total jaap</span></div><div class="stat"><b id="homeStreak">0</b><span>Day streak</span></div><div class="stat"><b id="homeSeva">0</b><span>Seva activities</span></div></div>
-<div class="card"><h3>🎯 Today's focus</h3><p id="homeTargetText">Your daily target is 108 jaap.</p><div class="progressbar"><div id="homeProgress"></div></div></div></section>
-<section id="jaap" class="page"><div class="section-head"><h2>📿 Daily Jaap</h2><span>Cloud-saved</span></div><div class="jaap-layout"><div class="card counter-card"><label>Mantra</label><select id="mantra"><option>ॐ हनुमते नमः</option><option>ॐ नमः शिवाय</option><option>श्री राम जय राम जय जय राम</option><option>हरे कृष्ण महामंत्र</option><option>गायत्री मंत्र</option></select><label>Daily target</label><select id="target"><option value="108">108</option><option value="216">216</option><option value="500">500</option><option value="1008">1,008</option><option value="custom">Custom</option></select><input id="customTarget" class="hidden" type="number" min="1" max="1000000" placeholder="Enter target"><div class="counter-circle"><span id="count">0</span><small>/ <span id="targetText">108</span></small></div><div class="progressbar"><div id="jaapProgress"></div></div><p id="completeMsg" class="complete"></p><div class="counter-actions"><button id="minus" class="secondary">−1</button><button id="plus" class="primary">+1 Jaap</button><button id="mala" class="secondary">+108</button></div><button id="saveJaap" class="primary wide">Save today's Jaap ☁️</button><button id="reset" class="reset">Reset today's count</button><p id="saveMessage" class="message"></p></div><div class="card"><h3>🙏 Practice with awareness</h3><p>The number is a tool for consistency, not a measure of spiritual worth.</p><div class="tip"><b>Simple practice</b><br>Choose a comfortable target, chant attentively, and keep the practice sustainable.</div><div class="tip"><b>Today</b><br><span id="savedToday">No saved record yet.</span></div></div></div></section>
-<section id="progress" class="page"><div class="section-head"><h2>🔥 Your Progress</h2><span>Consistency, not competition.</span></div><div class="cards three"><div class="card big-stat">📿<b id="totalJaap">0</b><small>Total Jaap</small></div><div class="card big-stat">🔥<b id="streak">0</b><small>Day Streak</small></div><div class="card big-stat">❤️<b id="seva">0</b><small>Seva Activities</small></div></div><div class="card"><h3>🏅 Achievements</h3><div id="badges"></div></div><div class="card"><h3>📅 Recent practice</h3><div id="history" class="history"></div></div></section>
-<section id="seva" class="page"><div class="section-head"><h2>❤️ Seva</h2><span>Good actions beyond the counter.</span></div><div class="card"><h3>Record a seva activity</h3><p class="muted">This only records your activity on Bhakti Marg. It does not mean Bhakti Marg received money or acted as a donation recipient.</p><form id="sevaForm"><label>Seva type</label><select id="sevaType"><option>Helping someone</option><option>Food donation</option><option>Animal care</option><option>Temple/community service</option><option>Charity donation</option><option>Other good work</option></select><label>Short note (optional)</label><input id="sevaNote" maxlength="160" placeholder="What did you do?"><button class="primary" type="submit">Save Seva ❤️</button></form><p id="sevaMessage" class="message"></p></div><div class="card"><h3>📸 Donation proof</h3><p>If you later add public sharing, screenshots should be moderated and must hide transaction IDs, phone numbers, email addresses and other sensitive information. V2.1 keeps this private for now.</p></div></section>
-<section id="profile" class="page"><div class="section-head"><h2>👤 Profile</h2><span>Your Bhakti Journey</span></div><div class="card profile-card"><div class="avatar">🙏</div><div><h2 id="profileName">Devotee</h2><p id="profileEmail"></p></div></div><button id="logout" class="secondary">Logout</button></section>
-</section></main><footer>🚩 Bhakti Marg • Naam Smaran • Sadhana • Seva</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script>
-</body></html>
+<section id="home" class="page active">
+  <div class="hero">
+    <div><p class="eyebrow">BHAKTI • SADHANA • SEVA</p><h1 id="welcome">Begin your journey.</h1>
+    <p class="hero-copy">Build a simple daily practice of Naam Smaran, learning, good actions and seva.</p>
+    <button class="primary" data-page="jaap">Start Today's Jaap →</button></div>
+    <div class="mandir-card"><div class="diya">🪔</div><h3>आज का संकल्प</h3><p>Take a few moments today to remember Bhagwan with श्रद्धा and a calm mind.</p></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat"><b id="homeJaap">0</b><span>Total jaap</span></div>
+    <div class="stat"><b id="homeStreak">0</b><span>Day streak</span></div>
+    <div class="stat"><b id="homeSeva">0</b><span>Seva activities</span></div>
+  </div>
+</section>
+
+<section id="jaap" class="page">
+  <div class="section-head"><h2>📿 Daily Jaap</h2><span>Cloud-saved</span></div>
+  <div class="jaap-layout">
+    <div class="card counter-card">
+      <label>Mantra</label><select id="mantra"><option>ॐ हनुमते नमः</option><option>ॐ नमः शिवाय</option><option>श्री राम जय राम जय जय राम</option><option>हरे कृष्ण महामंत्र</option><option>गायत्री मंत्र</option></select>
+      <label>Daily target</label><select id="target"><option value="108">108</option><option value="216">216</option><option value="500">500</option><option value="1008">1,008</option></select>
+      <div class="counter-circle"><span id="count">0</span><small>/ <span id="targetText">108</span></small></div>
+      <p id="completeMsg" class="complete"></p>
+      <div class="counter-actions"><button id="minus" class="secondary">−1</button><button id="plus" class="primary">+1 Jaap</button><button id="mala" class="secondary">+108</button></div>
+      <button id="saveJaap" class="primary wide">Save today's Jaap ☁️</button>
+      <button id="reset" class="reset">Reset today's count</button>
+      <p id="saveMessage" class="message"></p>
+    </div>
+    <div class="card"><h3>🙏 Practice with awareness</h3><p>The number is a tool for consistency, not a measure of spiritual worth.</p><div class="tip"><b>Tip</b><br>Chant at a comfortable pace and keep your attention on the mantra.</div></div>
+  </div>
+</section>
+
+<section id="progress" class="page">
+<div class="section-head"><h2>🔥 Your Progress</h2><span>Consistency, not competition.</span></div>
+<div class="cards three"><div class="card big-stat">📿<b id="totalJaap">0</b><small>Total Jaap</small></div><div class="card big-stat">🔥<b id="streak">0</b><small>Day Streak</small></div><div class="card big-stat">❤️<b id="seva">0</b><small>Seva Activities</small></div></div>
+<div class="card"><h3>🏅 Achievements</h3><div id="badges"></div></div>
+</section>
+
+<section id="sevaPage" class="page">
+<div class="section-head"><h2>❤️ Seva</h2><span>Serve with humility</span></div>
+<div class="seva-grid">
+<div class="card"><h3>Record Today's Seva</h3><form id="sevaForm">
+<label>Seva type</label>
+<select id="sevaType" required><option value="">Choose seva</option><option>🤝 Helping someone</option><option>🍚 Food donation</option><option>🧹 Cleanliness / service</option><option>🐄 Animal care</option><option>🛕 Temple / community service</option><option>📚 Helping with education</option><option>🌱 Environmental service</option><option>✨ Other</option></select>
+<label>Description <span class="optional">(optional)</span></label>
+<textarea id="sevaDescription" maxlength="500" placeholder="What did you do?"></textarea>
+<button class="primary wide" type="submit">Save Seva ❤️</button><p id="sevaMessage" class="message"></p>
+</form></div>
+<div class="card"><h3>🌸 Your Seva</h3><div class="seva-total"><b id="sevaTotal">0</b><span>recorded activities</span></div><p>Seva can turn devotion into helpful action. It does not need to be public or costly.</p><div class="tip">🙏 <b>Remember:</b> serve without expecting recognition.</div></div>
+</div>
+<div class="card seva-history-card"><h3>📜 Your Seva History</h3><div id="sevaHistory"><p>No seva recorded yet.</p></div></div>
+</section>
+
+<section id="profile" class="page">
+<div class="section-head"><h2>👤 Profile</h2><span>Your Bhakti Journey</span></div>
+<div class="card profile-card"><div class="avatar">🙏</div><div><h2 id="profileName">Devotee</h2><p id="profileEmail"></p></div></div>
+<button id="logout" class="secondary">Logout</button>
+</section>
+</section>
+</main>
+<footer>🚩 Bhakti Marg V2 • Naam Smaran • Sadhana • Seva</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+</body>
+</html>
