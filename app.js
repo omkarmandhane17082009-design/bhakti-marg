@@ -3,7 +3,7 @@ const SUPABASE_PUBLISHABLE_KEY="sb_publishable_1IliYfoPR1eoOF5xw6b30g_Wyh-mnO5";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let mode="login",count=0,total=0,streak=0,seva=0,target=108,mantra="ॐ हनुमते नमः";
 const $=id=>document.getElementById(id), today=()=>new Date().toISOString().slice(0,10);
-function render(){$("count").textContent=count.toLocaleString();$("targetText").textContent=Number(target).toLocaleString();$("completeMsg").textContent=count>=target?"🙏 आज की साधना पूर्ण! 🚩":"";$("homeJaap").textContent=total.toLocaleString();$("totalJaap").textContent=total.toLocaleString();$("homeStreak").textContent=streak;$("streak").textContent=streak;$("homeSeva").textContent=seva;$("seva").textContent=seva;const b=[];if(total>=108)b.push("📿 First 108 Jaap");if(total>=1008)b.push("🚩 1,008 Jaap");if(streak>=7)b.push("🔥 7-Day Consistency");if(seva)b.push("❤️ First Seva");$("badges").innerHTML=b.length?b.map(x=>`<span class="badge">${x}</span>`).join(" "):"Start your journey today. 🙏"}
+function render(){$("count").textContent=count.toLocaleString();$("targetText").textContent=Number(target).toLocaleString();$("completeMsg").textContent=count>=target?"🙏 आज की साधना पूर्ण! 🚩":"";$("homeJaap").textContent=total.toLocaleString();$("totalJaap").textContent=total.toLocaleString();$("homeStreak").textContent=streak;$("streak").textContent=streak;$("homeSeva").textContent=seva;$("seva").textContent=seva;$("profileJaap").textContent=total.toLocaleString();$("profileStreak").textContent=streak;$("profileSeva").textContent=seva;const b=[];if(total>=108)b.push("📿 First 108 Jaap");if(total>=1008)b.push("🚩 1,008 Jaap");if(streak>=7)b.push("🔥 7-Day Consistency");if(seva)b.push("❤️ First Seva");$("badges").innerHTML=b.length?b.map(x=>`<span class="badge">${x}</span>`).join(" "):"Start your journey today. 🙏"}
 function page(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));$(p).classList.add("active");const b=document.querySelector(`[data-page="${p}"]`);if(b)b.classList.add("active")}
 document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>page(b.dataset.page));
 $("plus").onclick=()=>{count++;render()};$("minus").onclick=()=>{count=Math.max(0,count-1);render()};$("mala").onclick=()=>{count+=108;render()};$("reset").onclick=()=>{count=0;render()};
@@ -11,7 +11,7 @@ $("mantra").onchange=e=>mantra=e.target.value;$("target").onchange=e=>{target=+e
 function setMode(m){mode=m;$("loginTab").classList.toggle("active",m==="login");$("signupTab").classList.toggle("active",m==="signup");$("nameWrap").classList.toggle("hidden",m!=="signup");$("authSubmit").textContent=m==="login"?"Login":"Create account";$("authMessage").textContent=""}
 $("loginTab").onclick=()=>setMode("login");$("signupTab").onclick=()=>setMode("signup");
 async function profile(user,name){const r=await sb.from("profiles").upsert({id:user.id,display_name:name||"Devotee"},{onConflict:"id"});if(r.error)console.error(r.error)}
-async function load(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const r=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();if(r.data){total=Number(r.data.total_jaap)||0;streak=r.data.streak||0;seva=r.data.seva_count||0;$("profileName").textContent=r.data.display_name||"Devotee";$("welcome").textContent=`Welcome, ${r.data.display_name||"Devotee"} 🙏`}$("profileEmail").textContent=user.email||"";try{await loadSevaHistory(user.id)}catch(e){console.error(e)};try{await loadCommunityJaap()}catch(e){console.error(e)};try{await loadDailyBhakti()}catch(e){console.error(e)};render()}
+async function load(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const r=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();if(r.data){total=Number(r.data.total_jaap)||0;streak=r.data.streak||0;seva=r.data.seva_count||0;$("profileName").textContent=r.data.display_name||"Devotee";$("profileDisplayName").value=r.data.display_name||"Devotee";$("profileBio").textContent=r.data.bio||"Add a short devotional bio.";$("profileBioInput").value=r.data.bio||"";$("welcome").textContent=`Welcome, ${r.data.display_name||"Devotee"} 🙏`}$("profileEmail").textContent=user.email||"";try{await loadSevaHistory(user.id)}catch(e){console.error(e)};try{await loadCommunityJaap()}catch(e){console.error(e)};try{await loadDailyBhakti()}catch(e){console.error(e)};try{await loadCreations()}catch(e){console.error(e)};render()}
 $("authForm").onsubmit=async e=>{e.preventDefault();$("authMessage").textContent="Working…";const email=$("email").value.trim(),password=$("password").value;if(mode==="signup"){const r=await sb.auth.signUp({email,password});if(r.error){$("authMessage").textContent=r.error.message;return}if(r.data.user)await profile(r.data.user,$("displayName").value.trim());$("authMessage").textContent="Account created. Check your email if confirmation is enabled, then log in."}else{const r=await sb.auth.signInWithPassword({email,password});if(r.error){$("authMessage").textContent=r.error.message;return}await show()}};
 async function show(){$("auth").classList.add("hidden");$("app").classList.remove("hidden");try{await load()}catch(e){console.error(e);render()}}
 $("saveJaap").onclick=async()=>{const {data:{user}}=await sb.auth.getUser();if(!user)return;$("saveMessage").textContent="Saving…";const r=await sb.from("jaap_records").upsert({user_id:user.id,mantra,jaap_count:count,target,completed:count>=target,recorded_date:today()},{onConflict:"user_id,recorded_date"});if(r.error){$("saveMessage").textContent=r.error.message;return}const old=total;total=Math.max(total,old+count);const p=await sb.from("profiles").update({total_jaap:total,streak}).eq("id",user.id);$("saveMessage").textContent=p.error?p.error.message:"☁️ Today's jaap saved.";render()};
@@ -65,3 +65,43 @@ $("dailyComplete").onclick=async()=>{const {data:{user}}=await sb.auth.getUser()
 
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
 (async()=>{const r=await sb.auth.getSession();setMode("login");if(r.data.session)show();else $("auth").classList.remove("hidden");render()})();
+
+
+// V2.4 — My Bhakti Profile
+$("profileForm").onsubmit=async e=>{
+ e.preventDefault();
+ const {data:{user}}=await sb.auth.getUser(); if(!user)return;
+ $("profileMessage").textContent="Saving…";
+ const name=$("profileDisplayName").value.trim()||"Devotee";
+ const bio=$("profileBioInput").value.trim()||null;
+ const r=await sb.from("profiles").update({display_name:name,bio}).eq("id",user.id);
+ if(r.error){$("profileMessage").textContent=r.error.message;return}
+ $("profileName").textContent=name;$("profileBio").textContent=bio||"Add a short devotional bio.";$("welcome").textContent=`Welcome, ${name} 🙏`;
+ $("profileMessage").textContent="✅ Profile updated.";
+};
+
+const TYPE_LABELS={bhajan:"🎵 Bhajan",song:"🎤 Song",shayari:"✍️ Shayari",writing:"📝 Bhakti Writing"};
+async function loadCreations(){
+ const {data:{user}}=await sb.auth.getUser(); if(!user)return;
+ const r=await sb.from("bhakti_creations").select("id,content_type,title,content,audio_url,visibility,status,created_at").eq("user_id",user.id).order("created_at",{ascending:false});
+ if(r.error){console.error(r.error);$("myCreations").innerHTML="<p>Unable to load your creations.</p>";return}
+ const rows=r.data||[];
+ $("myCreations").innerHTML=rows.length?rows.map(x=>`<article class="creation-item"><h3>${escapeHtml(x.title)}</h3><div class="creation-meta"><span class="creation-tag">${TYPE_LABELS[x.content_type]||x.content_type}</span><span class="creation-tag">${x.visibility==="public"?"🌍 Public":"🔒 Private"}</span><span class="creation-tag">${x.status==="published"?"🌸 Published":"📝 Draft"}</span></div>${x.content?`<div class="creation-content">${escapeHtml(x.content)}</div>`:""}${x.audio_url?`<p><a href="${escapeHtml(x.audio_url)}" target="_blank" rel="noopener">🎧 Open audio</a></p>`:""}<div class="creation-actions"><button class="danger" data-delete-creation="${x.id}">Delete</button></div></article>`).join(""):"<p>No creations yet. Your first Bhakti creation can start here. 🙏</p>";
+ document.querySelectorAll("[data-delete-creation]").forEach(btn=>btn.onclick=async()=>{
+   if(!confirm("Delete this creation?"))return;
+   const rr=await sb.from("bhakti_creations").delete().eq("id",btn.dataset.deleteCreation);
+   if(rr.error){$("creationMessage").textContent=rr.error.message;return}
+   $("creationMessage").textContent="🗑️ Creation deleted.";await loadCreations();
+ });
+}
+
+$("creationForm").onsubmit=async e=>{
+ e.preventDefault();
+ const {data:{user}}=await sb.auth.getUser(); if(!user)return;
+ const type=$("creationType").value,title=$("creationTitle").value.trim(),content=$("creationContent").value.trim()||null,audio=$("creationAudio").value.trim()||null,visibility=$("creationVisibility").value,status=$("creationStatus").value;
+ if(visibility==="public"&&status!=="published"){$("creationMessage").textContent="Choose Published to make a creation public.";return}
+ $("creationMessage").textContent="Saving…";
+ const r=await sb.from("bhakti_creations").insert({user_id:user.id,content_type:type,title,content,audio_url:audio,visibility,status});
+ if(r.error){$("creationMessage").textContent=r.error.message;return}
+ $("creationForm").reset();$("creationVisibility").value="private";$("creationStatus").value="draft";$("creationMessage").textContent="🙏 Creation saved.";await loadCreations();
+};

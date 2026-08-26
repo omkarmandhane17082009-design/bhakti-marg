@@ -135,8 +135,40 @@
 </section>
 
 <section id="profile" class="page">
-<div class="section-head"><h2>👤 Profile</h2><span>Your Bhakti Journey</span></div>
-<div class="card profile-card"><div class="avatar">🙏</div><div><h2 id="profileName">Devotee</h2><p id="profileEmail"></p></div></div>
+<div class="section-head"><h2>👤 My Bhakti Profile</h2><span>Your Bhakti Journey</span></div>
+<div class="card profile-card">
+  <div class="avatar">🙏</div>
+  <div class="profile-main"><h2 id="profileName">Devotee</h2><p id="profileEmail"></p><p id="profileBio" class="profile-bio">Add a short devotional bio.</p></div>
+</div>
+<div class="cards three profile-stats">
+  <div class="card big-stat">📿<b id="profileJaap">0</b><small>Total Jaap</small></div>
+  <div class="card big-stat">🔥<b id="profileStreak">0</b><small>Day Streak</small></div>
+  <div class="card big-stat">❤️<b id="profileSeva">0</b><small>Seva Activities</small></div>
+</div>
+<div class="card profile-edit-card">
+  <h3>✏️ Edit Profile</h3>
+  <form id="profileForm">
+    <label>Display name</label><input id="profileDisplayName" type="text" maxlength="60" required>
+    <label>Bio <span class="optional">(optional)</span></label><textarea id="profileBioInput" maxlength="240" placeholder="A short introduction about your Bhakti journey"></textarea>
+    <button class="primary" type="submit">Save Profile</button>
+    <p id="profileMessage" class="message"></p>
+  </form>
+</div>
+<div class="card creations-card">
+  <div class="creation-head"><div><h3>🎨 My Creations</h3><p>Bhajans, songs, Shayari and devotional writings.</p></div></div>
+  <form id="creationForm" class="creation-form">
+    <label>What are you creating?</label>
+    <select id="creationType"><option value="bhajan">🎵 Bhajan</option><option value="song">🎤 Song</option><option value="shayari">✍️ Shayari</option><option value="writing">📝 Bhakti Writing</option></select>
+    <label>Title</label><input id="creationTitle" maxlength="120" required placeholder="Give your creation a title">
+    <label>Lyrics / Writing</label><textarea id="creationContent" maxlength="10000" placeholder="Write your Bhajan, Shayari or devotional thoughts..."></textarea>
+    <label>Audio URL <span class="optional">(optional for now)</span></label><input id="creationAudio" type="url" placeholder="Add an audio link later">
+    <div class="creation-options"><div><label>Visibility</label><select id="creationVisibility"><option value="private">🔒 Private</option><option value="public">🌍 Public</option></select></div><div><label>Status</label><select id="creationStatus"><option value="draft">📝 Draft</option><option value="published">🌸 Published</option></select></div></div>
+    <label class="copyright-check"><input id="copyrightConfirm" type="checkbox" required> I created this work or have permission to share it.</label>
+    <button class="primary wide" type="submit">Save Creation</button>
+    <p id="creationMessage" class="message"></p>
+  </form>
+</div>
+<div class="card creations-list-card"><h3>📚 My Saved Creations</h3><div id="myCreations"><p>No creations yet. Your first Bhakti creation can start here. 🙏</p></div></div>
 <button id="logout" class="secondary">Logout</button>
 </section>
 </section>
