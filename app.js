@@ -11,7 +11,7 @@ $("mantra").onchange=e=>mantra=e.target.value;$("target").onchange=e=>{target=+e
 function setMode(m){mode=m;$("loginTab").classList.toggle("active",m==="login");$("signupTab").classList.toggle("active",m==="signup");$("nameWrap").classList.toggle("hidden",m!=="signup");$("authSubmit").textContent=m==="login"?"Login":"Create account";$("authMessage").textContent=""}
 $("loginTab").onclick=()=>setMode("login");$("signupTab").onclick=()=>setMode("signup");
 async function profile(user,name){const r=await sb.from("profiles").upsert({id:user.id,display_name:name||"Devotee"},{onConflict:"id"});if(r.error)console.error(r.error)}
-async function load(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const r=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();if(r.data){total=Number(r.data.total_jaap)||0;streak=r.data.streak||0;seva=r.data.seva_count||0;$("profileName").textContent=r.data.display_name||"Devotee";$("welcome").textContent=`Welcome, ${r.data.display_name||"Devotee"} 🙏`}$("profileEmail").textContent=user.email||"";try{await loadSevaHistory(user.id)}catch(e){console.error(e)};try{await loadCommunityJaap()}catch(e){console.error(e)};render()}
+async function load(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const r=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();if(r.data){total=Number(r.data.total_jaap)||0;streak=r.data.streak||0;seva=r.data.seva_count||0;$("profileName").textContent=r.data.display_name||"Devotee";$("welcome").textContent=`Welcome, ${r.data.display_name||"Devotee"} 🙏`}$("profileEmail").textContent=user.email||"";try{await loadSevaHistory(user.id)}catch(e){console.error(e)};try{await loadCommunityJaap()}catch(e){console.error(e)};try{await loadDailyBhakti()}catch(e){console.error(e)};render()}
 $("authForm").onsubmit=async e=>{e.preventDefault();$("authMessage").textContent="Working…";const email=$("email").value.trim(),password=$("password").value;if(mode==="signup"){const r=await sb.auth.signUp({email,password});if(r.error){$("authMessage").textContent=r.error.message;return}if(r.data.user)await profile(r.data.user,$("displayName").value.trim());$("authMessage").textContent="Account created. Check your email if confirmation is enabled, then log in."}else{const r=await sb.auth.signInWithPassword({email,password});if(r.error){$("authMessage").textContent=r.error.message;return}await show()}};
 async function show(){$("auth").classList.add("hidden");$("app").classList.remove("hidden");try{await load()}catch(e){console.error(e);render()}}
 $("saveJaap").onclick=async()=>{const {data:{user}}=await sb.auth.getUser();if(!user)return;$("saveMessage").textContent="Saving…";const r=await sb.from("jaap_records").upsert({user_id:user.id,mantra,jaap_count:count,target,completed:count>=target,recorded_date:today()},{onConflict:"user_id,recorded_date"});if(r.error){$("saveMessage").textContent=r.error.message;return}const old=total;total=Math.max(total,old+count);const p=await sb.from("profiles").update({total_jaap:total,streak}).eq("id",user.id);$("saveMessage").textContent=p.error?p.error.message:"☁️ Today's jaap saved.";render()};
@@ -45,6 +45,23 @@ async function loadCommunityJaap(){
   $("communityMessage").textContent="";
 }
 $("refreshCommunity").onclick=loadCommunityJaap;
+
+const DAILY_FALLBACK={title:"Today's Bhakti Practice",mantra:"ॐ हनुमते नमः",thought:"Let devotion bring steadiness, kindness and courage into your actions.",sadhana:"Sit quietly for a few minutes, remember your chosen deity, and chant with attention.",seva_suggestion:"Help someone today without expecting recognition."};
+function localDate(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+async function loadDailyBhakti(){
+ const d=localDate();
+ $("dailyDate").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+ let c=DAILY_FALLBACK;
+ try{const r=await sb.from("daily_bhakti_entries").select("title,mantra,thought,sadhana,seva_suggestion").eq("entry_date",d).maybeSingle();if(!r.error&&r.data)c=r.data}catch(e){console.error(e)}
+ $("dailyTitle").textContent=c.title||DAILY_FALLBACK.title;$("dailyMantra").textContent=c.mantra||DAILY_FALLBACK.mantra;$("dailyThought").textContent=c.thought||DAILY_FALLBACK.thought;$("dailySadhana").textContent=c.sadhana||DAILY_FALLBACK.sadhana;$("dailySeva").textContent=c.seva_suggestion||DAILY_FALLBACK.seva_suggestion;
+ const {data:{user}}=await sb.auth.getUser();if(!user)return;
+ const r=await sb.from("daily_bhakti_completions").select("completed_date").eq("user_id",user.id).order("completed_date",{ascending:false}).limit(365);
+ if(r.error){console.error(r.error);return}
+ const dates=(r.data||[]).map(x=>x.completed_date);$("dailyCompleted").textContent=dates.length;
+ let s=0,cur=new Date(d+"T00:00:00");for(const ds of dates){if(ds!==cur.getFullYear()+"-"+String(cur.getMonth()+1).padStart(2,"0")+"-"+String(cur.getDate()).padStart(2,"0"))break;s++;cur.setDate(cur.getDate()-1)}$("dailyStreak").textContent=s;
+ if(dates.includes(d)){$("dailyComplete").disabled=true;$("dailyComplete").textContent="✅ Completed today"}
+}
+$("dailyComplete").onclick=async()=>{const {data:{user}}=await sb.auth.getUser();if(!user)return;const d=localDate();$("dailyMessage").textContent="Saving…";const r=await sb.from("daily_bhakti_completions").insert({user_id:user.id,completed_date:d});if(r.error){$("dailyMessage").textContent=r.error.code==="23505"?"Already completed today. 🙏":r.error.message;await loadDailyBhakti();return}$("dailyMessage").textContent="🌸 Today's practice completed.";await loadDailyBhakti()};
 
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
 (async()=>{const r=await sb.auth.getSession();setMode("login");if(r.data.session)show();else $("auth").classList.remove("hidden");render()})();

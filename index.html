@@ -14,6 +14,7 @@
     <button data-page="progress" class="nav-btn">Progress</button>
     <button data-page="sevaPage" class="nav-btn">Seva</button>
     <button data-page="community" class="nav-btn">Community</button>
+    <button data-page="dailyBhakti" class="nav-btn">Daily Bhakti</button>
     <button data-page="profile" class="nav-btn">Profile</button>
   </nav>
 </header>
@@ -111,6 +112,26 @@
 </div>
 <button id="refreshCommunity" class="secondary">↻ Refresh community total</button>
 <p id="communityMessage" class="message"></p>
+</section>
+
+<section id="dailyBhakti" class="page">
+<div class="section-head"><h2>🌸 Daily Bhakti</h2><span>One day at a time</span></div>
+<div class="card daily-card">
+  <div id="dailyDate" class="daily-date"></div>
+  <div class="daily-icon">🪔</div>
+  <h2 id="dailyTitle">Today's Bhakti Practice</h2>
+  <div class="daily-block"><h3>📿 Today's Mantra</h3><p id="dailyMantra">ॐ हनुमते नमः</p></div>
+  <div class="daily-block"><h3>🌸 Today's Thought</h3><p id="dailyThought">Let devotion bring steadiness, kindness and courage into your actions.</p></div>
+  <div class="daily-block"><h3>🙏 Today's Sadhana</h3><p id="dailySadhana">Sit quietly for a few minutes, remember your chosen deity, and chant with attention.</p></div>
+  <div class="daily-block"><h3>❤️ Today's Seva Suggestion</h3><p id="dailySeva">Help someone today without expecting recognition.</p></div>
+  <button id="dailyComplete" class="primary wide">✅ Mark today's practice complete</button>
+  <p id="dailyMessage" class="message"></p>
+</div>
+<div class="cards three">
+  <div class="card big-stat">🔥<b id="dailyStreak">0</b><small>Daily Bhakti streak</small></div>
+  <div class="card big-stat">📅<b id="dailyCompleted">0</b><small>Days completed</small></div>
+  <div class="card big-stat">🌸<b>1</b><small>Practice today</small></div>
+</div>
 </section>
 
 <section id="profile" class="page">
